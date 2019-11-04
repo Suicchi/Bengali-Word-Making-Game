@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: 26fc36ede7ba7924e9968c5ce9e24fcf
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 77
+  forceTextureCase: -1
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: KumarkhaliMJ
+  fontNames:
+  - KumarkhaliMJ
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: f6815df6cdfaa48418b3f278a9b00bcc, type: 3}
+  - {fileID: 12800000, guid: 4af472ba767063046ae087227a3f509b, type: 3}
+  - {fileID: 12800000, guid: 85ebc32c97a02c24a9342b5dfcb1a006, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
