@@ -44,7 +44,11 @@ namespace ban_u2a
                     cY = i + 1;
                     continue;
                 }
-                if (i < w.Length - 1 && D(w.ElementAt(i)) && w.ElementAt(i - 1) == 'র' && !D(w.ElementAt(i - 2)))
+                if (i -2 > 0 &&
+                    i < w.Length - 1 &&
+                     D(w.ElementAt(i)) && 
+                     w.ElementAt(i - 1) == 'র' && 
+                     !D(w.ElementAt(i - 2)))
                 {
                     var j = 1;
                     var aZ = 0;

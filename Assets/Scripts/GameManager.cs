@@ -35,7 +35,8 @@ namespace Com.Hattimatim.BWMG
                 // SceneManager.LoadScene(2);
                 //PhotonNetwork.LeaveRoom();
                 // PhotonNetwork.Disconnect();
-                SceneManager.LoadScene(2);
+                // SceneManager.LoadScene(2);
+                LoadVictory();
             }
         }
 
@@ -69,6 +70,15 @@ namespace Com.Hattimatim.BWMG
         #endregion
 
         #region Private Methods
+
+        void LoadVictory()
+        {
+            if(SceneManager.GetActiveScene().name == "testNetwork")
+            {
+                // PhotonNetwork.LoadLevel("Victory");
+                SceneManager.LoadScene(2);
+            }
+        }
 
         void LoadLevel()
         {

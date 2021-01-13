@@ -98,6 +98,44 @@ namespace Com.Hattimatim.BWMG
             ChangeValues(playBoardStrings);
         }
 
+        void ResetValues()
+        {
+            // for (int i=0; i<7; i++)
+            // {
+            //     for (int j = 0; j < 7; j++)
+            //     {
+            //         GameObject temp = Instantiate(nonTmpPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            //         Destroy(boxes[i, j]);
+            //         //temp.GetComponentInChildren<TextMeshProUGUI>().text = childtexts[i, j];
+            //         temp.transform.SetParent(this.transform, false);
+            //         temp.name = $"{i}{j}";
+            //         boxes[i, j] = temp;
+            //     }
+            // }
+
+            //Initialize the input boxes and play boxes
+            GameObject playBoard = this.gameObject;
+
+            playBoard.name = "PlayBoardPanel";
+            //Debug.Log(playBoard.name);
+            //We are getting the slots into the object variable for future use
+            if (playBoard.transform.childCount > 0)
+            {
+                for (int i = 0, k = 0; k < playBoard.transform.childCount && i < 7; i++)
+                {
+                    for (int j = 0; j < 7; j++, k++)
+                    {
+                        playBoard.transform.GetChild(k).name = $"{i}{j}";
+                        boxes[i, j] = playBoard.transform.GetChild(k).gameObject;
+                        // Debug.Log(boxes[i,j].name);
+                    }
+
+                }
+
+            }
+            stateEmpty = true;
+        }
+
         void ChangeValues(string[,] childtexts)
         {
             Debug.Log("ChangeValues() was called");
@@ -137,6 +175,7 @@ namespace Com.Hattimatim.BWMG
             // var spaceExists = false;
             bool wordfound = false;
             int length = 0;
+            int length2 = 0;
 
             //Since there is already old values there we need to do something with them on this :D
             DragHandler.newInput.Sort();
@@ -174,7 +213,6 @@ namespace Com.Hattimatim.BWMG
                 // values before
                 for( int i= Int32.Parse(DragHandler.newInput[0][1].ToString()) - 1; i>=0 ; i-- )
                 {
-                    // Null reference error here
                     if(oList.Contains($"{row}{i}"))
                     {
                         valuesLeft++;
@@ -233,7 +271,7 @@ namespace Com.Hattimatim.BWMG
                 {
                     // We have two possible word combinations now
                     colMatch = true;
-                    rowMatch = false;
+                    rowMatch = true;
                 }
                 else if (valuesAbove > 0 || valuesBelow > 0)
                 {
@@ -270,7 +308,8 @@ namespace Com.Hattimatim.BWMG
                     {
                         Word += boxes[row, i].transform.GetComponentInChildren<TextMeshProUGUI>().text;
                     }
-                    for (int i = row - valuesAbove, j=0; j<length; i++, j++)
+                    length2 = valuesAbove + 1 + valuesBelow;
+                    for (int i = row - valuesAbove, j=0; j<length2; i++, j++)
                     {
                         Word2 += boxes[i, col].transform.GetComponentInChildren<TextMeshProUGUI>().text;
                     }
@@ -290,23 +329,38 @@ namespace Com.Hattimatim.BWMG
                 {
                     unicodeWord2 = b2u.Convert(Word2);
                 }
+                Debug.Log(unicodeWord2);
 
                 //Check if the unicodeword exists in dictionary
                 Dictionary<string, List<string>> elist = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(dictfile));
 
-                if (elist[length.ToString()].Contains(unicodeWord) || elist[length.ToString()].Contains(unicodeWord2))
+                if(Word2 != String.Empty)
                 {
-                    wordfound = true;
-                    Debug.Log("we are putting new inputs into old ones");
-                    InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
-                    InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
-                    DragHandler.newInput.Clear();
+                    if (elist[length.ToString()].Contains(unicodeWord) || elist[length2.ToString()].Contains(unicodeWord2))
+                    {
+                        wordfound = true;
+                        Debug.Log("we are putting new inputs into old ones");
+                        InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
+                        InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
+                        DragHandler.newInput.Clear();
+                    }
                 }
-                else
+                else 
                 {
-                    wordfound = false;
-                    DragHandler.newInput.Clear();
-                    Instantiator.GetComponent<InstantiatePlayBoard>().OnClickRestoreState();
+                    if (elist[length.ToString()].Contains(unicodeWord))
+                    {
+                        wordfound = true;
+                        Debug.Log("we are putting new inputs into old ones");
+                        InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
+                        InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
+                        DragHandler.newInput.Clear();
+                    }
+                    else
+                    {
+                        wordfound = false;
+                        DragHandler.newInput.Clear();
+                        Instantiator.GetComponent<InstantiatePlayBoard>().OnClickRestoreState();
+                    }
                 }
                 
                 Debug.Log(wordfound);
@@ -694,6 +748,11 @@ namespace Com.Hattimatim.BWMG
         #endregion
 
         #region Public Functions
+
+        public void ResetPanel()
+        {
+            ResetValues();
+        }
 
         public void Check()
         {

@@ -161,7 +161,23 @@ namespace Com.Hattimatim.BWMG
         void GenerateInputByMaster()
         {
             Debug.Log("GenerateInputByMaster() was called");
-            var inputList = GenerateInput();
+            
+            List<string> inputList = new List<string>();
+            var testTerm = true;
+            while(testTerm)
+            {
+                try
+                {
+                    inputList = GenerateInput();
+                    testTerm = false;
+                    break;
+                }
+                catch (System.Exception ex)
+                {
+                    // TODO
+                    Debug.LogException(ex, this);
+                }
+            }
             
             //We raise an event so that everyone changes input boxes
             //RaiseEvent Codes

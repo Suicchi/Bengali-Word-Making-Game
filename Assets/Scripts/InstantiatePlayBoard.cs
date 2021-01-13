@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Com.Hattimatim.BWMG
 {
@@ -23,16 +24,26 @@ namespace Com.Hattimatim.BWMG
         private const byte EVENT_UPDATE_SCORE = 2;
         private const byte EVENT_CHANGE_TURN = 3;
         private const byte EVENT_RESET_SCORE = 4;
+        private const byte EVENT_RESET_BOARD = 5;
+        private const byte EVENT_ALLOW_RESET = 6;
+        private const byte EVENT_NO_RESET = 7;
+        private const byte EVENT_VICTORY = 8;
+        private const byte EVENT_DEFEAT = 9;
+        
+
         // public static Assets.Scripts.Player player1 = new Assets.Scripts.Player(1, 0, true);
         // public static Assets.Scripts.Player player2 = new Assets.Scripts.Player(2, 0, false);
         public static Assets.Scripts.Player player1;
         public static Assets.Scripts.Player player2;
+
         #endregion
 
         #region Private Variables
 
         [SerializeField]
-        GameObject playboardPrefab, playboardContainer, inputPanelPrefab, inputPanelContainer, inputpanelGO, playboardGO, inputButtonsContainer, scoreboard1, scoreboard2;
+        GameObject playboardPrefab, playboardContainer, inputPanelPrefab, inputPanelContainer, 
+        inputpanelGO, playboardGO, inputButtonsContainer, scoreboard1, scoreboard2;
+        public GameObject PermissionPanel;
         //bool stateEmpty;
         Photon.Realtime.Player currentPlayer;
 
@@ -50,12 +61,15 @@ namespace Com.Hattimatim.BWMG
         public static List<string> oldInputs {get; set;}
         public static GameState matchState;
 
+        public static bool win;
+
         #endregion
 
         #region Monobehavious Callbacks
 
         private void Awake()
         {
+            win = false;
             //We instantiate the playboard for both players and set it in a place so that both players can see
             playboardGO = PhotonNetwork.Instantiate(playboardPrefab.name, new Vector3(0, 0, 0), Quaternion.identity);
             playboardGO.tag = "PlayBoardPanel";
@@ -68,6 +82,8 @@ namespace Com.Hattimatim.BWMG
             inputpanelGO.tag = "InputPanel";
             inputpanelGO.transform.SetParent(inputPanelContainer.transform, false);
             inputpanelGO.name = "InputPanel";
+
+            // Setup the permission panel
 
             PhotonNetwork.AutomaticallySyncScene = true;
 
@@ -85,21 +101,26 @@ namespace Com.Hattimatim.BWMG
                 //inputpanelGO.SetActive(false);
             }
 
-             currentPlayer = PhotonNetwork.PlayerListOthers[0];
+
+            currentPlayer = PhotonNetwork.PlayerListOthers[0];
+
 
         }
 
         private void Update()
         {
-            if (player1.score >=25)
+            if (scoreboard2.GetComponent<Text>().text == "25")
             {
-                PhotonNetwork.LoadLevel("Victory");
+                PhotonNetwork.AutomaticallySyncScene = false;
+                SceneManager.LoadScene(3);
             }
-            else if(player2.score >= 25)
+            else if(scoreboard1.GetComponent<Text>().text == "25")
             {
-                PhotonNetwork.LoadLevel("Defeat");
+                PhotonNetwork.AutomaticallySyncScene = false;
+                SceneManager.LoadScene(2);
             }
         }
+
 
         #endregion
 
@@ -176,6 +197,32 @@ namespace Com.Hattimatim.BWMG
             Debug.Log("UpdatePlayBoardState() was called");
             matchState.stateUpdate(playboardGO.GetComponent<PlayboardManager>().boxes);
             SaveSystem.Save(matchState);
+        }
+
+        public void OnClickAskToReset()
+        {
+            PhotonNetwork.RaiseEvent(EVENT_RESET_BOARD, new object[] {  }, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
+        }
+
+        public void OnClickResetBoard()
+        {
+            /**
+            -> Clear all oldInputs
+            -> Update matchstate
+            -> Save the matchstate
+            -> Hide the Panel
+            -> Raise event to sync playboard
+             */
+            PermissionPanel.SetActive(false);
+            oldInputs = new List<string>();
+            PhotonNetwork.RaiseEvent(EVENT_ALLOW_RESET, new object[] {  }, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+
+        }
+
+        public void OnClickNoChangeToBoard()
+        {
+            PhotonNetwork.RaiseEvent(EVENT_NO_RESET, new object[] {  }, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
+            PermissionPanel.SetActive(false);
         }
 
         // public void OnClickResetScore()
@@ -278,6 +325,30 @@ namespace Com.Hattimatim.BWMG
             // {
             //     ResetScore();
             // }
+            if (obj.Code == EVENT_RESET_BOARD)
+            {
+                // Show the panel that asks for permission to reset board
+                PermissionPanel.SetActive(true);
+            }
+            if (obj.Code == EVENT_ALLOW_RESET)
+            {
+                playboardGO.GetComponent<PlayboardManager>().ResetPanel();
+                matchState.stateUpdate(playboardGO.GetComponent<PlayboardManager>().boxes);
+                SaveSystem.Save(matchState);
+            }
+            if (obj.Code == EVENT_NO_RESET)
+            {
+                // Do nothing
+                Debug.Log("denied");
+            }
+            if (obj.Code == EVENT_VICTORY)
+            {                
+                SceneManager.LoadScene(2);
+            }
+            if (obj.Code == EVENT_DEFEAT)
+            {
+                SceneManager.LoadScene(3);
+            }
         }
 
 
