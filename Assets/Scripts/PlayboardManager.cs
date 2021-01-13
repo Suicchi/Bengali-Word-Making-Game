@@ -32,7 +32,7 @@ namespace Com.Hattimatim.BWMG
         GameObject Instantiator;
         bool stateEmpty;
         string dictfile = Application.streamingAssetsPath + "/sorted159kwords.json";
-
+        GameObject playBoard;
         #endregion
 
         #region Monobehavious Callbacks
@@ -40,7 +40,7 @@ namespace Com.Hattimatim.BWMG
         void Awake()
         {
             //Initialize the input boxes and play boxes
-            GameObject playBoard = this.gameObject;
+            playBoard = this.gameObject;
 
             playBoard.name = "PlayBoardPanel";
             //Debug.Log(playBoard.name);
@@ -100,38 +100,17 @@ namespace Com.Hattimatim.BWMG
 
         void ResetValues()
         {
-            // for (int i=0; i<7; i++)
-            // {
-            //     for (int j = 0; j < 7; j++)
-            //     {
-            //         GameObject temp = Instantiate(nonTmpPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-            //         Destroy(boxes[i, j]);
-            //         //temp.GetComponentInChildren<TextMeshProUGUI>().text = childtexts[i, j];
-            //         temp.transform.SetParent(this.transform, false);
-            //         temp.name = $"{i}{j}";
-            //         boxes[i, j] = temp;
-            //     }
-            // }
-
-            //Initialize the input boxes and play boxes
-            GameObject playBoard = this.gameObject;
-
-            playBoard.name = "PlayBoardPanel";
-            //Debug.Log(playBoard.name);
-            //We are getting the slots into the object variable for future use
-            if (playBoard.transform.childCount > 0)
+            for (int i=0; i<7; i++)
             {
-                for (int i = 0, k = 0; k < playBoard.transform.childCount && i < 7; i++)
+                for (int j = 0; j < 7; j++)
                 {
-                    for (int j = 0; j < 7; j++, k++)
-                    {
-                        playBoard.transform.GetChild(k).name = $"{i}{j}";
-                        boxes[i, j] = playBoard.transform.GetChild(k).gameObject;
-                        // Debug.Log(boxes[i,j].name);
-                    }
-
+                    GameObject temp = Instantiate(nonTmpPrefab, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                    Destroy(boxes[i, j]);
+                    //temp.GetComponentInChildren<TextMeshProUGUI>().text = childtexts[i, j];
+                    temp.transform.SetParent(this.transform, false);
+                    temp.name = $"{i}{j}";
+                    boxes[i, j] = temp;
                 }
-
             }
             stateEmpty = true;
         }
