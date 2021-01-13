@@ -59,11 +59,15 @@ namespace Com.Hattimatim.BWMG
             player1score = player1.score;
             player2ID = player2.id;
             player2score = player2.score;
-            OldInputs = oldInputs;
+            OldInputs = oldInputs.ToList();
         }
         public GameState(Player player1, Player player2)
         {
-
+            player1ID = player1.id;
+            player1score = player1.score;
+            player2ID = player2.id;
+            player2score = player2.score;
+            OldInputs = InstantiatePlayBoard.oldInputs.ToList();
         }
 
         public void stateUpdate(int id, GameObject[,] boxes, GameObject[] inputBoxes, Player player1, Player player2, List<string> oldInputs)
@@ -101,7 +105,7 @@ namespace Com.Hattimatim.BWMG
             player2score = player2.score;
 
 
-            OldInputs = oldInputs;
+            OldInputs = oldInputs.ToList();
         }
         public void stateUpdate(GameObject[,] boxes, GameObject[] inputBoxes, Player player1, Player player2, List<string> oldInputs)
         {
@@ -138,7 +142,7 @@ namespace Com.Hattimatim.BWMG
             player2score = player2.score;
 
 
-            OldInputs = oldInputs;
+            OldInputs = oldInputs.ToList();
         }
 
         public void stateUpdate(GameObject[] inputBoxes)
@@ -154,6 +158,7 @@ namespace Com.Hattimatim.BWMG
                     InputBoxes[i] = "\0";
                 }
             }
+            OldInputs = InstantiatePlayBoard.oldInputs.ToList();
         }
 
         public void stateUpdate(GameObject[,] boxes)
@@ -172,12 +177,14 @@ namespace Com.Hattimatim.BWMG
                     }
                 }
             }
+            OldInputs = InstantiatePlayBoard.oldInputs.ToList();
         }
 
         public void stateUpdate(Player player1, Player player2)
         {
             player1score = player1.score;
             player2score = player2.score;
+            OldInputs = InstantiatePlayBoard.oldInputs.ToList();
         }
     }
 }

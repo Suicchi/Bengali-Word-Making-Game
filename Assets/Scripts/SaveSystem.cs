@@ -9,7 +9,8 @@ namespace Assets.Scripts
 {
     public static class SaveSystem
     {
-        static string binPath = Application.persistentDataPath + "/gamesave.bin";
+        // static string binPath = Application.persistentDataPath + "/gamesave.bin";
+        static string binPath = Application.dataPath + "/gamesave.bin";
         public static void Save(GameState game)
         {
             FileStream stream = new FileStream(binPath, FileMode.Create);

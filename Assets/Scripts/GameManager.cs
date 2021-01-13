@@ -32,9 +32,10 @@ namespace Com.Hattimatim.BWMG
                 Debug.LogFormat($"OnPlayerLeftRoom IsMasterClient {PhotonNetwork.IsMasterClient}");
                 
                 //Needs change. Must show result scene
-                //SceneManager.LoadScene(2);
+                // SceneManager.LoadScene(2);
                 //PhotonNetwork.LeaveRoom();
-                PhotonNetwork.Disconnect();
+                // PhotonNetwork.Disconnect();
+                SceneManager.LoadScene(2);
             }
         }
 

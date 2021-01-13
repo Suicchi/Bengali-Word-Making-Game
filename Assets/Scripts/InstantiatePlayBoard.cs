@@ -8,6 +8,7 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -157,7 +158,7 @@ namespace Com.Hattimatim.BWMG
             //Update the Playboardboxes
             playboardGO.GetComponent<PlayboardManager>().RestorePanel(matchState.Boxes);
             //Update the oldinputs
-            oldInputs = matchState.OldInputs;
+            oldInputs = matchState.OldInputs.ToList();
             //clear newinput list
             DragHandler.newInput.Clear();
         }

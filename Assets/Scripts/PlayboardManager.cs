@@ -62,6 +62,11 @@ namespace Com.Hattimatim.BWMG
             stateEmpty = true;
             Instantiator = GameObject.Find("Checker");
             scoreboard1 = GameObject.Find("SelfScore");
+            if(InstantiatePlayBoard.oldInputs == null)
+            {
+                Debug.Log("Oldinputs is null for some reason");
+                InstantiatePlayBoard.oldInputs = new List<string>();
+            }
         }
 
         #endregion
@@ -169,6 +174,7 @@ namespace Com.Hattimatim.BWMG
                 // values before
                 for( int i= Int32.Parse(DragHandler.newInput[0][1].ToString()) - 1; i>=0 ; i-- )
                 {
+                    // Null reference error here
                     if(oList.Contains($"{row}{i}"))
                     {
                         valuesLeft++;
@@ -291,6 +297,7 @@ namespace Com.Hattimatim.BWMG
                 if (elist[length.ToString()].Contains(unicodeWord) || elist[length.ToString()].Contains(unicodeWord2))
                 {
                     wordfound = true;
+                    Debug.Log("we are putting new inputs into old ones");
                     InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
                     InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
                     DragHandler.newInput.Clear();
@@ -414,6 +421,7 @@ namespace Com.Hattimatim.BWMG
                         if (elist[length.ToString()].Contains(unicodeWord))
                         {
                             wordfound = true;
+                            Debug.Log("We are again putting values in oldInputs");
                             InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
                             InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
                             DragHandler.newInput.Clear();
