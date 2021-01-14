@@ -349,6 +349,7 @@ namespace Com.Hattimatim.BWMG
             {
                 var rowMatch = true;
                 var colMatch = true;
+                var oldExists = false;
                 //First check if new inputs are in same row or column
                 var row = Int32.Parse(DragHandler.newInput[0][0].ToString());
                 var col = Int32.Parse(DragHandler.newInput[0][1].ToString());
@@ -400,6 +401,7 @@ namespace Com.Hattimatim.BWMG
                         }
                         else
                         {
+                            oldExists = true;
                             length++;
                         }
                     }
@@ -412,6 +414,10 @@ namespace Com.Hattimatim.BWMG
                         {
                             if (oList.Contains($"{row}{i}"))
                             {
+                                if(!oldExists)
+                                {
+                                    oldExists = true;
+                                }
                                 valuesLeft++;
                             }
                             else
@@ -425,6 +431,10 @@ namespace Com.Hattimatim.BWMG
                         {
                             if (oList.Contains($"{row}{i}"))
                             {
+                                if(!oldExists)
+                                {
+                                    oldExists = true;
+                                }
                                 valuesRight++;
                             }
                             else
@@ -432,41 +442,51 @@ namespace Com.Hattimatim.BWMG
                                 break;
                             }
                         }
-
-                        if(valuesLeft >0 || valuesRight >0)
+                        if (oldExists)
                         {
-                            length += valuesLeft + valuesRight;
+                            if(valuesLeft >0 || valuesRight >0)
+                            {
+                                length += valuesLeft + valuesRight;
+                            }
+
+                            for(int i = col-valuesLeft, j=0; j<length  ; i++, j++  )
+                            {
+                                Word += boxes[row, i].transform.GetComponentInChildren<TextMeshProUGUI>().text;
+                            }
+
+                            //We took the word now we convert to unicode
+                            var b2u = new BijoyToUni();
+                            var unicodeWord = b2u.Convert(Word);
+                            Debug.Log(unicodeWord);
+
+                            //Check if the unicodeword exists in dictionary
+                            Dictionary<string, List<string>> elist = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(dictfile));
+
+                            if (elist[length.ToString()].Contains(unicodeWord))
+                            {
+                                wordfound = true;
+                                Debug.Log("We are again putting values in oldInputs");
+                                InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
+                                InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
+                                DragHandler.newInput.Clear();
+                            }
+                            else
+                            {
+                                wordfound = false;
+                                DragHandler.newInput.Clear();
+                                Instantiator.GetComponent<InstantiatePlayBoard>().OnClickRestoreState();
+                            }
+                            Debug.Log(wordfound);
+                            return wordfound;
                         }
-
-                        for(int i = col-valuesLeft, j=0; j<length  ; i++, j++  )
-                        {
-                            Word += boxes[row, i].transform.GetComponentInChildren<TextMeshProUGUI>().text;
-                        }
-
-                        //We took the word now we convert to unicode
-                        var b2u = new BijoyToUni();
-                        var unicodeWord = b2u.Convert(Word);
-                        Debug.Log(unicodeWord);
-
-                        //Check if the unicodeword exists in dictionary
-                        Dictionary<string, List<string>> elist = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(dictfile));
-
-                        if (elist[length.ToString()].Contains(unicodeWord))
-                        {
-                            wordfound = true;
-                            Debug.Log("We are again putting values in oldInputs");
-                            InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
-                            InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
-                            DragHandler.newInput.Clear();
-                        }
+                        // There is no old input between the new items or on side
                         else
                         {
-                            wordfound = false;
+                            length = 0;
                             DragHandler.newInput.Clear();
                             Instantiator.GetComponent<InstantiatePlayBoard>().OnClickRestoreState();
+                            return false;
                         }
-                        Debug.Log(wordfound);
-                        return wordfound;
                     }
                     // If there are gaps we can't do anything
                     else
@@ -501,6 +521,7 @@ namespace Com.Hattimatim.BWMG
                         }
                         else
                         {
+                            oldExists = true;
                             length++;
                         }
                     }
@@ -513,6 +534,10 @@ namespace Com.Hattimatim.BWMG
                         {
                             if (oList.Contains($"{i}{col}"))
                             {
+                                if(!oldExists)
+                                {
+                                    oldExists = true;
+                                }
                                 valuesAbove++;
                             }
                             else
@@ -526,6 +551,10 @@ namespace Com.Hattimatim.BWMG
                         {
                             if (oList.Contains($"{i}{col}"))
                             {
+                                if(!oldExists)
+                                {
+                                    oldExists = true;
+                                }
                                 valuesBelow++;
                             }
                             else
@@ -534,39 +563,50 @@ namespace Com.Hattimatim.BWMG
                             }
                         }
 
-                        if (valuesAbove > 0 || valuesBelow > 0)
+                        if(oldExists)
                         {
-                            length += valuesAbove + valuesBelow;
+                            if (valuesAbove > 0 || valuesBelow > 0)
+                            {
+                                length += valuesAbove + valuesBelow;
+                            }
+
+                            for (int i = row - valuesAbove, j = 0; j < length; i++, j++)
+                            {
+                                Word += boxes[i, col].transform.GetComponentInChildren<TextMeshProUGUI>().text;
+                            }
+
+                            //We took the word now we convert to unicode
+                            var b2u = new BijoyToUni();
+                            var unicodeWord = b2u.Convert(Word);
+                            Debug.Log(unicodeWord);
+
+                            //Check if the unicodeword exists in dictionary
+                            Dictionary<string, List<string>> elist = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(dictfile));
+
+                            if (elist[length.ToString()].Contains(unicodeWord))
+                            {
+                                wordfound = true;
+                                InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
+                                InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
+                                DragHandler.newInput.Clear();
+                            }
+                            else
+                            {
+                                wordfound = false;
+                                Instantiator.GetComponent<InstantiatePlayBoard>().OnClickRestoreState();
+                                DragHandler.newInput.Clear();
+                            }
+                            Debug.Log(wordfound);
+                            return wordfound;
                         }
-
-                        for (int i = row - valuesAbove, j = 0; j < length; i++, j++)
+                        // There is no old input among the new items or on the sides
+                        else 
                         {
-                            Word += boxes[i, col].transform.GetComponentInChildren<TextMeshProUGUI>().text;
-                        }
-
-                        //We took the word now we convert to unicode
-                        var b2u = new BijoyToUni();
-                        var unicodeWord = b2u.Convert(Word);
-                        Debug.Log(unicodeWord);
-
-                        //Check if the unicodeword exists in dictionary
-                        Dictionary<string, List<string>> elist = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(File.ReadAllText(dictfile));
-
-                        if (elist[length.ToString()].Contains(unicodeWord))
-                        {
-                            wordfound = true;
-                            InstantiatePlayBoard.oldInputs.AddRange(DragHandler.newInput);
-                            InstantiatePlayBoard.oldInputs = InstantiatePlayBoard.oldInputs.Distinct().ToList();
-                            DragHandler.newInput.Clear();
-                        }
-                        else
-                        {
-                            wordfound = false;
+                            length = 0;
                             Instantiator.GetComponent<InstantiatePlayBoard>().OnClickRestoreState();
                             DragHandler.newInput.Clear();
+                            return false;
                         }
-                        Debug.Log(wordfound);
-                        return wordfound;
                     }
                     // If there are gaps we can't do anything
                     else
