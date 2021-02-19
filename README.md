@@ -12,6 +12,6 @@ https://github.com/ariful19/Unicode-To-Bijoy-Converter
 
 Photon Unity Networking has been used to implement multiplayer. UNET was being deprecated and the new UNET promised better networking features but I needed to have something solid.
 
-To run the game, you need vc_redist.x64.exe from Microsoft on Windows.  
+To run the game on Windows, you need vc_redist.x64.exe from Microsoft.  
 
 You can get it from https://support.microsoft.com/en-in/help/2977003/the-latest-supported-visual-c-downloads
